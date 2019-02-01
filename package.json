@@ -5,7 +5,7 @@
   "main": "disposable-frames.js",
   "module": "index.js",
   "scripts": {
-    "test": "nyc ava --timeout=10s",
+    "test": "NODE_DEBUG=disposable-frames nyc ava --timeout=10s",
     "build": "babel -o disposable-frames.js index.js",
     "test-no-report": "npm run build && NODE_DEBUG=disposable-frames nyc ava --timeout=10s --verbose",
     "lint": "eslint .",
