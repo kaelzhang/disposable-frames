@@ -1,15 +1,41 @@
-export const setImmediate = (func, {
+// Naming
+// - suffix underscore: alias or ponyfill for builtin function
+// - prefix underscore: our implementation
+
+const clearTimeout_ = clearTimeout
+const clearImmediate_ = typeof clearImmediate === 'function'
+  ? clearImmediate
+  : clearTimeout
+
+const setTimeout0 = func => setTimeout(func, 0)
+const setImmediate_ = typeof setImmediate === 'function'
+  ? setImmediate
+  : setTimeout0
+
+const _setTimeout = (func, timeout, {
   tolerance = 0
 } = {}) => {
   const start = Date.now()
-  console.log(start)
-  return setTimeout(() => {console.log(start, Date.now(), Date.now() - start)
-    if (tolerance > 0 && Date.now() - start > tolerance) {
+  const set = timeout === 0
+    ? setImmediate_
+    : setTimeout0
+
+  return set(() => {
+    if (tolerance > 0 && Date.now() - start - timeout > tolerance) {
       return
     }
 
     func()
-  }, 0)
+  })
+}
+
+const _setImmediate = (func, options) => _setTimeout(func, 0, options)
+
+export {
+  _setTimeout as setTimeout,
+  clearTimeout_ as clearTimeout,
+  _setImmediate as setImmediate,
+  clearImmediate_ as clearImmediate
 }
 
 export function immediate (func, {

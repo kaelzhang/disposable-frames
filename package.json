@@ -7,7 +7,7 @@
   "scripts": {
     "test": "nyc ava --timeout=10s",
     "build": "babel -o disposable-frames.js index.js",
-    "test-no-report": "NODE_DEBUG=disposable-frames nyc ava --timeout=10s --verbose",
+    "test-no-report": "npm run build && NODE_DEBUG=disposable-frames nyc ava --timeout=10s --verbose",
     "lint": "eslint .",
     "prepublish": "npm run build",
     "posttest": "nyc report --reporter=text-lcov > coverage.lcov && codecov"
@@ -22,6 +22,8 @@
   },
   "keywords": [
     "disposable-frames",
+    "timer",
+    "setImmediate",
     "frames",
     "fps",
     "scheduler",
@@ -31,11 +33,9 @@
     "node": ">= 6"
   },
   "ava": {
-    "babel": {
-      "testOptions": {
-        "babelrc": true
-      }
-    }
+    "require": [
+      "@babel/register"
+    ]
   },
   "author": "kaelzhang",
   "license": "MIT",
@@ -45,6 +45,7 @@
   "devDependencies": {
     "@babel/cli": "^7.2.3",
     "@babel/preset-env": "^7.3.1",
+    "@babel/register": "^7.0.0",
     "ava": "^1.2.0",
     "codecov": "^3.1.0",
     "eslint": "^5.12.1",

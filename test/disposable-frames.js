@@ -1,9 +1,12 @@
-const test = require('ava')
-const log = require('util').debuglog('disposable-frames')
-const {
+import test from 'ava'
+import {debuglog} from 'util'
+import {
   setImmediate,
+  clearImmediate,
   immediate
-} = require('..')
+} from '../index'
+
+const log = debuglog('disposable-frames')
 
 let counter = 0
 
@@ -28,11 +31,13 @@ const heavy = () => {
     s += i
   }
   const end = Date.now()
-  log('%s ends at %s, takes %sms', label, end - begin, end - start)
+  log('%s ends at %s, takes %sms, result %s',
+    label, end - begin, end - start, s)
   return end - start
 }
 
 let SAFE_TOLERANCE
+let BAD_TOLERANCE
 
 test.before.cb(t => {
   resetBegin('before')
@@ -40,6 +45,7 @@ test.before.cb(t => {
   setTimeout(() => {
     const cost = heavy()
     SAFE_TOLERANCE = 10 * cost
+    BAD_TOLERANCE = cost / 2
     log('SAFE_TOLERANCE: %s', SAFE_TOLERANCE)
     t.end()
   }, 0)
@@ -92,38 +98,40 @@ test.serial.cb('2. setImmediate: more', t => {
   }, 0)
 })
 
-test.serial.cb('3. immediate', t => {
+test.serial.cb('5. clearImmediate', t => {
+  let i = 0
+  const timer = setImmediate(() => {
+    i = 1
+  })
+  clearImmediate(timer)
+
+  setTimeout(() => {
+    t.is(i, 0)
+    t.end()
+  }, 10)
+})
+
+test.serial.cb('4. immediate', t => {
   resetBegin(3)
   let s = 0
   let inner_counter = 0
 
-  const delays = [
-    0,                    // ok
-    SAFE_TOLERANCE,       // ok
-    0,       // skipped
-    SAFE_TOLERANCE,       // skipped
-    SAFE_TOLERANCE * 2,   // ok
-    SAFE_TOLERANCE * 2,   // skipped
-  ]
-
   const wrapped = immediate(() => {
     const i = inner_counter ++
     logTime(`wrapped ${i}`)
-    heavy()
     s ++
 
-    if (inner_counter < delays.length) {
-      run()
-    }
+    heavy()
   }, {
-    tolerance: SAFE_TOLERANCE
+    tolerance: BAD_TOLERANCE
   })
 
-  function run () {
-    setTimeout(wrapped, delays[inner_counter])
-  }
+  wrapped()
+  wrapped()
+  wrapped()
 
-  run()
+  setTimeout(wrapped, SAFE_TOLERANCE)
+  setTimeout(wrapped, SAFE_TOLERANCE * 2)
 
   setTimeout(() => {
     t.is(s, 3)
