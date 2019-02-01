@@ -98,7 +98,7 @@ test.serial.cb('2. setImmediate: more', t => {
   }, 0)
 })
 
-test.serial.cb('5. clearImmediate', t => {
+test.serial.cb('3. clearImmediate', t => {
   let i = 0
   const timer = setImmediate(() => {
     i = 1
