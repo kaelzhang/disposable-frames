@@ -112,7 +112,7 @@ test.serial.cb('3. clearImmediate', t => {
 })
 
 test.serial.cb('4. immediate, basic and with call', t => {
-  resetBegin(3)
+  resetBegin(4)
   let s = 0
 
   const wrapper = immediate(function w () {
@@ -136,6 +136,7 @@ test.serial.cb('4. immediate, basic and with call', t => {
   setTimeout(() => wrapped(5), SAFE_TOLERANCE * 2)
 
   setTimeout(() => {
+    logTime('before assertion')
     t.is(s, 3)
     t.end()
   }, SAFE_TOLERANCE * 3)

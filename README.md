@@ -15,7 +15,9 @@
 
 # disposable-frames
 
-Disposable frame scheduler which abandons frames if CPU is high. `disposable-frames` is useful for web pages with heavy DOM manipulation.
+Disposable frame scheduler which abandons frames if CPU is high or the I/O event loop is blocking. `disposable-frames` is useful for web pages with heavy DOM manipulation.
+
+`disposable-frames` detects the usage of CPU approximately by monitoring the hehavior of `setTimeout(func, 0)`.
 
 ## Install
 
