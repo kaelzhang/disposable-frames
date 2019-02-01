@@ -111,14 +111,12 @@ test.serial.cb('3. clearImmediate', t => {
   }, 10)
 })
 
-test.serial.cb('4. immediate', t => {
+test.serial.cb('4. immediate, basic and with call', t => {
   resetBegin(3)
   let s = 0
-  let inner_counter = 0
 
-  const wrapped = immediate(() => {
-    const i = inner_counter ++
-    logTime(`wrapped ${i}`)
+  const wrapper = immediate(function w () {
+    logTime(`wrapped >> ${this.n} <<`)
     s ++
 
     heavy()
@@ -126,12 +124,16 @@ test.serial.cb('4. immediate', t => {
     tolerance: BAD_TOLERANCE
   })
 
-  wrapped()
-  wrapped()
-  wrapped()
+  const wrapped = n => wrapper.call({
+    n
+  })
 
-  setTimeout(wrapped, SAFE_TOLERANCE)
-  setTimeout(wrapped, SAFE_TOLERANCE * 2)
+  wrapped(1)
+  wrapped(2)
+  wrapped(3)
+
+  setTimeout(() => wrapped(4), SAFE_TOLERANCE)
+  setTimeout(() => wrapped(5), SAFE_TOLERANCE * 2)
 
   setTimeout(() => {
     t.is(s, 3)

@@ -1,23 +1,19 @@
-// Naming
-// - suffix underscore: alias or ponyfill for builtin function
-// - prefix underscore: our implementation
-
-const clearTimeout_ = clearTimeout
-const clearImmediate_ = typeof clearImmediate === 'function'
+const clearTimeout_native = clearTimeout
+const clearImmediate_native = typeof clearImmediate === 'function'
   ? clearImmediate
   : clearTimeout
 
 const setTimeout0 = func => setTimeout(func, 0)
-const setImmediate_ = typeof setImmediate === 'function'
+const setImmediate_native = typeof setImmediate === 'function'
   ? setImmediate
   : setTimeout0
 
-const _setTimeout = (func, timeout, {
+const disposable_setTimeout = (func, timeout, {
   tolerance = 0
 } = {}) => {
   const start = Date.now()
   const set = timeout === 0
-    ? setImmediate_
+    ? setImmediate_native
     : setTimeout0
 
   return set(() => {
@@ -29,23 +25,24 @@ const _setTimeout = (func, timeout, {
   })
 }
 
-const _setImmediate = (func, options) => _setTimeout(func, 0, options)
+const disposable_setImmediate = (func, options) =>
+  disposable_setTimeout(func, 0, options)
 
 export {
-  _setTimeout as setTimeout,
-  clearTimeout_ as clearTimeout,
-  _setImmediate as setImmediate,
-  clearImmediate_ as clearImmediate
+  disposable_setTimeout as setTimeout,
+  clearTimeout_native as clearTimeout,
+  disposable_setImmediate as setImmediate,
+  clearImmediate_native as clearImmediate
 }
 
-export function immediate (func, {
+export const immediate = (func, {
   tolerance = 0,
   maxWait = 0,
   leading = false
-} = {}) {
+} = {}) => {
   let last = 0
 
-  return (...args) => {
+  return function wrapped (...args) {
     const start = Date.now()
     setTimeout(() => {
       const now = Date.now()
