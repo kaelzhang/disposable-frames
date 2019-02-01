@@ -15,7 +15,7 @@
 
 # disposable-frames
 
-<!-- description -->
+Disposable frame scheduler which abandons
 
 ## Install
 
@@ -26,8 +26,24 @@ $ npm i disposable-frames
 ## Usage
 
 ```js
-import disposable_frames from 'disposable-frames'
+import {
+  setImmediate,
+  immediate
+} from 'disposable-frames'
+
+setImmediate(func, {
+  tolerance: 10
+})
 ```
+
+```js
+const wrapped = immediate(func, {
+  maxWait: 500,
+  tolerance: 50
+})
+```
+
+## setImmediate(func: Function, options: Object)
 
 ## License
 
