@@ -128,16 +128,18 @@ test.serial.cb('4. immediate, basic and with call', t => {
     n
   })
 
+  wrapped(0)
   wrapped(1)
   wrapped(2)
-  wrapped(3)
 
-  setTimeout(() => wrapped(4), SAFE_TOLERANCE)
-  setTimeout(() => wrapped(5), SAFE_TOLERANCE * 2)
-
+  setTimeout(() => wrapped(3), SAFE_TOLERANCE)
   setTimeout(() => {
-    logTime('before assertion')
-    t.is(s, 3)
-    t.end()
-  }, SAFE_TOLERANCE * 3)
+    wrapped(4)
+
+    setTimeout(() => {
+      logTime('before assertion')
+      t.is(s, 3)
+      t.end()
+    }, 0)
+  }, SAFE_TOLERANCE * 2)
 })
