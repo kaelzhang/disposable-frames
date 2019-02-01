@@ -1,6 +1,6 @@
 {
   "name": "disposable-frames",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Disposable frame scheduler",
   "main": "disposable-frames.js",
   "module": "index.js",
@@ -13,8 +13,8 @@
     "posttest": "nyc report --reporter=text-lcov > coverage.lcov && codecov"
   },
   "files": [
-    "src/",
-    "lib/"
+    "index.js",
+    "disposable-frames.js"
   ],
   "repository": {
     "type": "git",
