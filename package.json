@@ -1,7 +1,7 @@
 {
   "name": "disposable-frames",
-  "version": "1.0.1",
-  "description": "Disposable frame scheduler",
+  "version": "1.0.2",
+  "description": "Disposable frame scheduler which abandons frames if CPU is high.",
   "main": "disposable-frames.js",
   "module": "index.js",
   "scripts": {
