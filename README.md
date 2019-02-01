@@ -32,17 +32,6 @@ import {
   setImmediate,
   immediate
 } from 'disposable-frames'
-
-setImmediate(func, {
-  tolerance: 10
-})
-```
-
-```js
-const wrapped = immediate(func, {
-  maxWait: 500,
-  tolerance: 50
-})
 ```
 
 ## setImmediate(func: Function, options: Object): number | Immediate
@@ -51,11 +40,17 @@ const wrapped = immediate(func, {
 - **options.tolerance** `?number=0` The miniseconds within which since the `setImmediate` called that the `func` is allowed to execute. If `options.tolerance` is `0`, the default value, it indicates there is no restriction, which is silly because it is the only reason for this package to exist.
 - Returns
   - [`Immediate`](https://nodejs.org/dist/latest-v11.x/docs/api/timers.html#timers_class_immediate) on node
-  - `number` on browsers
+  - `number` the timer id on browsers
 
 Schedules the "immediate" execution of the `func` if the schedule doesn't take too long.
 
 If we schedule a function `foo` with `options.tolerance` as `50`(ms), and in the real world, the I/O event loops take too long to respond, which causes that the `setImmediate` callback is supposed to be scheduled after 100ms from the beginning. And then the execution of `foo` will be abandoned according to `options.tolerance`.
+
+```js
+setImmediate(func, {
+  tolerance: 10
+})
+```
 
 ## immediate(func: Function, options: Object): Function
 
@@ -66,6 +61,22 @@ If we schedule a function `foo` with `options.tolerance` as `50`(ms), and in the
   - **leading** `boolean=false` If `true`, the first execution is always allowed.
 
 Wrap the `func` as a new function which schedules `func` as well as `setImmediate` does every time the wrapper function invokes.
+
+```js
+const wrapped = immediate(func, {
+  maxWait: 500,
+  tolerance: 50
+})
+```
+
+Suppose that it takes precisely 100ms for `func` to execute every time then:
+
+```js
+wrapped()                   // will execute
+wrapped()                   // disposed
+wrapped()                   // disposed
+setTimeout(wrapped, 200)    // will execute
+```
 
 ## License
 
